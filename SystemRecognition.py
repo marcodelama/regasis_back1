@@ -15,14 +15,14 @@ def Profile():
     conteo = 0
 
     pantalla4 = Toplevel(pantalla)
-    pantalla4.title("BIOMETRIC SIGN UP")
+    pantalla4.title("PERFIL")
     pantalla4.geometry("1280x720")
 
     imagenBC = PhotoImage(file='C:/Users/mbarr/OneDrive/Escritorio/SistemaReconocimiento/SetUp/Back2.png')
     bc = Button(image=imagenBC, text="Inicio")
     bc.place(x=0, y=0, relwidth=1, relheight=1)
 
-    UserFile = open(F"{OutFolderPathUser}/{UserName}.txt", "r")
+    UserFile = open(f"{OutFolderPathUser}/{UserName}.txt", 'r')
     InfoUser = UserFile.read().split(',')
     Name = InfoUser[0]
     User = InfoUser[1]
@@ -51,10 +51,11 @@ def Code_Face(images):
     listacod = []
 
     for img in images:
-        img = cv2.cvtColor(img, cv2.COLOR_BG2RGB)
-
+        # Correccion de color
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        # Codificamos la imagen
         cod = fr.face_encodings(img)[0]
-
+        # Almacenamos
         listacod.append(cod)
 
     return listacod
@@ -74,14 +75,21 @@ def Close_Window2():
     pantalla3.destroy()
 
 def Sign_Biometric():
-    global RegName, RegUser, RegPassword, InputNameReg, InputUserReg, InputPasswordReg, cap, lblVideo, pantalla2
-
+    global pantalla, pantalla3, conteo, parpadeo, img_info, step, UserName, prueba
+    
     if cap is not None:
         ret, frame = cap.read()
 
         frameSave = frame.copy()
 
-        frame = imutils.resize(frame, width=1280)
+        #Frame Save
+        frameCopy = imutils.resize(frame, width=1280)
+
+        #Resize
+        frameFR = cv2.resize(frameCopy, (0, 0), None, 0.25, 0.25)
+
+        #Color
+        rgb = cv2.cvtColor(frameFR, cv2.COLOR_BGR2RGB)
 
         frameRGB = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
@@ -138,7 +146,7 @@ def Sign_Biometric():
                             # Face Detect
                             faces = detector.process(frameRGB)
 
-                            if faces.detections is not None:
+                            if faces.detections is not None:    
                                 for face in faces.detections:
 
                                     # bboxInfo - "id","bbox","score","center"
@@ -153,8 +161,7 @@ def Sign_Biometric():
 
                                         # Coordenates
                                         xi, yi, an, al = bbox.xmin, bbox.ymin, bbox.width, bbox.height
-                                        xi, yi, an, al = int(xi * animg), int(yi * alimg), int(
-                                            an * animg), int(al * alimg)
+                                        xi, yi, an, al = int(xi * animg), int(yi * alimg), int(an * animg), int(al * alimg)
 
                                         # Width
                                         offsetan = (offsetx / 100) * an
@@ -174,78 +181,83 @@ def Sign_Biometric():
                                         if an < 0: an = 0
                                         if al < 0: al = 0
 
-                                    if step == 0:
-                                        cv2.rectangle(frame, (xi, yi, an, al), (255, 0, 255), 2)
+                                        if step == 0:
+                                            print("Rostro detectado")
+                                            cv2.rectangle(frame, (xi, yi, an, al), (255, 0, 255), 2)
 
                                     #STEP 0
-                                        als0, ans0, c = img_step0.shape
-                                        frame[50:50 + als0, 50:50 + ans0] = img_step0
+                                            als0, ans0, c = img_step0.shape
+                                            frame[50:50 + als0, 50:50 + ans0] = img_step0
 
                                     #STEP 1
-                                        als1, ans1, c = img_step1.shape
-                                        frame[50:50 + als1, 1030:1030 + ans1] = img_step1
+                                            als1, ans1, c = img_step1.shape
+                                            frame[50:50 + als1, 1030:1030 + ans1] = img_step1
 
                                     #STEP 2
-                                        als2, ans2, c = img_step2.shape
-                                        frame[270:270 + als2, 1030:1030 + ans2] = img_step2
+                                            als2, ans2, c = img_step2.shape
+                                            frame[270:270 + als2, 1030:1030 + ans2] = img_step2
                                       
 
                                     #Requerimiento 1: Ver en dirección a la cámara
-                                        if x7 > x5 and x8 < x6:
-                                            alch, anch, c = img_check.shape
-                                            frame[165:165 + alch, 1105:1105 + anch] = img_check
+                                            if x7 > x5 and x8 < x6:
+                                                alch, anch, c = img_check.shape
+                                                frame[165:165 + alch, 1105:1105 + anch] = img_check
 
                                     #Requerimiento 2: Parpadear 5 veces
-                                        if longitud1 <= 10 and longitud2 <= 10 and parpadeo == False:
-                                            conteo = conteo  +1
-                                            parpadeo = True
+                                                if longitud1 <= 10 and longitud2 <= 10 and parpadeo == False:
+                                                    conteo = conteo  +1
+                                                    parpadeo = True
                                         
-                                        elif longitud1 > 10 and longitud2 > 10 and parpadeo == True:
-                                           parpadeo = False
+                                                elif longitud1 > 10 and longitud2 > 10 and parpadeo == True:
+                                                    parpadeo = False
 
-                                        cv2.putText(frame, f'Parpadeos: {int(conteo)}', (1070, 375), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
+                                                alich, anich, c = img_check.shape
+                                                frame[165:165 + alich, 1105:1105 + anich] = img_check
+
+                                                cv2.putText(frame, f'Parpadeos: {int(conteo)}', (1070, 375), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
 
                                         #Validación de parpadeos
-                                        if conteo >= 3:
-                                            alch, anch, c = img_check.shape
-                                            frame[385:385 + alch, 1105:1105 + anch] = img_check
+                                                if conteo >= 3:
+                                                    alch, anch, c = img_check.shape
+                                                    frame[385:385 + alch, 1105:1105 + anch] = img_check
 
                                             #Ojos abiertos
-                                            if longitud1 > 14 and longitud2 > 14:
-                                               cut = frameSave[yi:yf, xi:xf]
+                                                    if longitud1 > 14 and longitud2 > 14:
+                                                        cut = frameSave[yi:yf, xi:xf]
 
-                                               cv2.imwrite(f"{OutFolderPathFace}/{RegUser}.png", cut)
+                                                        cv2.imwrite(f"{OutFolderPathFace}/{RegUser}.png", cut)
 
-                                               step = 1
-                                        
-                                    else:
-                                       conteo = 0
+                                                        step = 1
+                                            else:
+                                                conteo = 0
 
-                                if step == 1:
-                                    cv2.rectangle(frame, (xi, yi, an, al), (255, 0, 255), 2)
+                                        if step == 1:
+                                            
+                                            cv2.rectangle(frame, (xi, yi, an, al), (255, 0, 255), 2)
 
-                                    alli, anli, c = img_liveness_check.shape
-                                    frame[50:50 + alli, 50:50 + anli] = img_liveness_check
+                                            alli, anli, c = img_liveness_check.shape
+                                            frame[50:50 + alli, 50:50 + anli] = img_liveness_check
 
-                                    facess = fr.face_locations(frameRGB)
-                                    facescod = fr.face_encodings(frameRGB, facess)
+                                    #Encontrar rostros
+                                            faces = fr.face_locations(rgb)
+                                            facescod = fr.face_encodings(rgb, faces)
 
-                                    for facecod, faceloc in zip(facescod, facess):
+                                            for facecod, faceloc in zip(facescod, faces):
                                         #Matching
-                                        Match = fr.compare_faces(FaceCode, facecod)
+                                                Match = fr.compare_faces(FaceCode, facecod)
 
                                         #Similitud
-                                        simi = fr.face_distance(FaceCode, facecod)
+                                                simi = fr.face_distance(FaceCode, facecod)
 
                                         #Min
-                                        min = np.argmin(simi)
+                                                min = np.argmin(simi)
 
-                                        if Match[min]:
-                                            UserName = clases[min].uppr()
+                                                if Match[min]:
+                                                    UserName = clases[min].upper()
 
-                                            Profile()
+                                                    Profile()
 
-                            close = pantalla2.protocol("WM_DELETE_WINDOW", Close_Window2())
+                            # close = pantalla3.protocol("WM_DELETE_WINDOW", Close_Window2())
 
       
     #Conversión
@@ -261,7 +273,7 @@ def Sign_Biometric():
         cap.release()
 
 def Log_Biometric():
-    global pantalla2, conteo, parpadeo, img_info, step, cap, lblVideo, RegUser
+    global pantalla, pantalla2, conteo, parpadeo, img_info, step, cap, lblVideo, RegUser
 
   #Validar videocaptura
     if cap is not None:
@@ -415,8 +427,7 @@ def Log_Biometric():
                                     alli, anli, c = img_liveness_check.shape
                                     frame[50:50 + alli, 50:50 + anli] = img_liveness_check
 
-                            close = pantalla2.protocol("WM_DELETE_WINDOW", Close_Window())
-
+                            # close = pantalla2.protocol("WM_DELETE_WINDOW", Close_Window())
       
     #Conversión
         im = Image.fromarray(frame)
@@ -430,8 +441,8 @@ def Log_Biometric():
     else:
         cap.release()
 
-def Log():
-    global LogUser, LogPass, OutFolderPathFace, cap, lblVideo, pantalla3, FaceCode, clases, image_names
+def Sign():
+    global LogUser, LogPass, OutFolderPath, cap, lblVideo, pantalla3, FaceCode, clases, images
 
     LogUser, LogPass = InputUserLog.get(), InputPasswordLog.get()
 
@@ -440,10 +451,9 @@ def Log():
     lista = os.listdir(OutFolderPathFace)
 
     for lis in lista:
-     #Leer imagen
-        imgdb = cv2. imread(f"{OutFolderPathFace}/{lis}")
-
-     #Guardar imagen
+        #Leer imagen
+        imgdb = cv2.imread(f"{OutFolderPathFace}/{lis}")
+        #Guardar imagen
         images.append(imgdb)
 
         clases.append(os.path.splitext(lis)[0])
@@ -462,7 +472,7 @@ def Log():
     cap.set(4, 720)
     Sign_Biometric()
 
-def Sign():
+def Log():
   global RegName, RegUser, RegPassword, InputNameReg, InputUserReg, InputPasswordReg, cap, lblVideo, pantalla2
   # Extracción de datos: Name - User - Password
   RegName, RegUser, RegPassword = InputNameReg.get(), InputUserReg.get(), InputPasswordReg.get()
@@ -580,12 +590,12 @@ InputPasswordLog.place(x=750, y=500)
 #Botones
 #Registro
 imagenBR = PhotoImage(file='C:/Users/mbarr/OneDrive/Escritorio/SistemaReconocimiento/SetUp/BtLogin.png')
-BtReg = Button(pantalla, text="Registro", image=imagenBR,  height="40", width="200", command=Sign)
+BtReg = Button(pantalla, text="Registro", image=imagenBR,  height="40", width="200", command=Log)
 BtReg.place(x=300, y=580)
 
 #Inicio
 imagenBI = PhotoImage(file='C:/Users/mbarr/OneDrive/Escritorio/SistemaReconocimiento/SetUp/BtSign.png')
-BtInicio = Button(pantalla, text="Registro", image=imagenBI,  height="40", width="200", command=Log)
+BtInicio = Button(pantalla, text="Registro", image=imagenBI,  height="40", width="200", command=Sign)
 BtInicio.place(x=900, y=580)
 
 pantalla.mainloop()
