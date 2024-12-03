@@ -83,7 +83,7 @@ def Close_Window2():
     step = 0
     pantalla3.destroy()
 
-def Sign_Biometric():
+def Log_Biometric():
     global pantalla, pantalla3, conteo, parpadeo, img_info, step, UserName, prueba
     
     if cap is not None:
@@ -212,11 +212,11 @@ def Sign_Biometric():
                                                 frame[165:165 + alch, 1105:1105 + anch] = img_check
 
                                     #Requerimiento 2: Parpadear 5 veces
-                                                if longitud1 <= 10 and longitud2 <= 10 and parpadeo == False:
-                                                    conteo = conteo  +1
+                                                if longitud1 <= 12 and longitud2 <= 12 and parpadeo == False:  # Umbral reducido de 10 a 12
+                                                    conteo = conteo + 1
                                                     parpadeo = True
-                                        
-                                                elif longitud1 > 10 and longitud2 > 10 and parpadeo == True:
+
+                                                elif longitud1 > 12 and longitud2 > 12 and parpadeo == True:  # Umbral ajustado para ojos abiertos
                                                     parpadeo = False
 
                                                 alich, anich, c = img_check.shape
@@ -224,16 +224,16 @@ def Sign_Biometric():
 
                                                 cv2.putText(frame, f'Parpadeos: {int(conteo)}', (1070, 375), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
 
-                                        #Validación de parpadeos
+# Validación de parpadeos
                                                 if conteo >= 3:
                                                     alich, anich, c = img_check.shape
                                                     frame[385:385 + alich, 1105:1105 + anich] = img_check
 
-                                            #Ojos abiertos
+    # Ojos abiertos
                                                     if longitud1 > 14 and longitud2 > 14:
                                                         step = 1
-                                            else:
-                                                conteo = 0
+                                                    else:
+                                                        conteo = 0
 
                                         if step == 1:
                                             cv2.rectangle(frame, (xi, yi, an, al), (255, 0, 255), 2)
@@ -273,12 +273,12 @@ def Sign_Biometric():
     #Mostrar video
         lblVideo.configure(image=img)
         lblVideo.image = img
-        lblVideo.after(10, Sign_Biometric)
+        lblVideo.after(10, Log_Biometric)
 
     else:
         cap.release()
 
-def Log_Biometric():
+def Sign_Biometric():
     global pantalla, pantalla2, conteo, parpadeo, img_info, step, cap, lblVideo, RegUser
 
   #Validar videocaptura
@@ -442,12 +442,12 @@ def Log_Biometric():
     #Mostrar video
         lblVideo.configure(image=img)
         lblVideo.image = img
-        lblVideo.after(10, Log_Biometric)
+        lblVideo.after(10, Sign_Biometric)
 
     else:
         cap.release()
 
-def Sign():
+def Log():
     global LogUser, LogPass, OutFolderPath, cap, lblVideo, pantalla3, FaceCode, clases, images
 
     LogUser, LogPass = InputUserLog.get(), InputPasswordLog.get()
@@ -476,9 +476,9 @@ def Sign():
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     cap.set(3, 1280)
     cap.set(4, 720)
-    Sign_Biometric()
+    Log_Biometric()
 
-def Log():
+def Sign():
   global RegName, RegUser, RegPassword, InputNameReg, InputUserReg, InputPasswordReg, cap, lblVideo, pantalla2
   # Extracción de datos: Name - User - Password
   RegName, RegUser, RegPassword = InputNameReg.get(), InputUserReg.get(), InputPasswordReg.get()
@@ -527,20 +527,20 @@ def Log():
       cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
       cap.set(3, 1280)
       cap.set(4, 720)
-      Log_Biometric()
+      Sign_Biometric()
 
 #Rutas
-OutFolderPathUser = 'C:/Users/mbarr/OneDrive/Escritorio/SistemaReconocimiento/DataBase/Users'
-PathUserCheck = 'C:/Users/mbarr/OneDrive/Escritorio/SistemaReconocimiento/DataBase/Users/'
-OutFolderPathFace = 'C:/Users/mbarr/OneDrive/Escritorio/SistemaReconocimiento/DataBase/Faces'
+OutFolderPathUser = 'C:/Users/Usuario/Desktop/RecognitionSystem/DataBase/Users'
+PathUserCheck = 'C:/Users/Usuario/Desktop/RecognitionSystem/DataBase/Users/'
+OutFolderPathFace = 'C:/Users/Usuario/Desktop/RecognitionSystem/DataBase/Faces'
 
 #Lectura de imágenes
-img_info = cv2.imread("C:/Users/mbarr/OneDrive/Escritorio/SistemaReconocimiento/SetUp/Info.png")
-img_check = cv2.imread("C:/Users/mbarr/OneDrive/Escritorio/SistemaReconocimiento/SetUp/check.png")
-img_step0 = cv2.imread("C:/Users/mbarr/OneDrive/Escritorio/SistemaReconocimiento/SetUp/Step0.png")
-img_step1 = cv2.imread("C:/Users/mbarr/OneDrive/Escritorio/SistemaReconocimiento/SetUp/Step1.png")
-img_step2 = cv2.imread("C:/Users/mbarr/OneDrive/Escritorio/SistemaReconocimiento/SetUp/Step2.png")
-img_liveness_check = cv2.imread("C:/Users/mbarr/OneDrive/Escritorio/SistemaReconocimiento/SetUp/LivenessCheck.png")
+img_info = cv2.imread("C:/Users/Usuario/Desktop/RecognitionSystem/SetUp/Info.png")
+img_check = cv2.imread("C:/Users/Usuario/Desktop/RecognitionSystem/SetUp/check.png")
+img_step0 = cv2.imread("C:/Users/Usuario/Desktop/RecognitionSystem/SetUp/Step0.png")
+img_step1 = cv2.imread("C:/Users/Usuario/Desktop/RecognitionSystem/SetUp/Step1.png")
+img_step2 = cv2.imread("C:/Users/Usuario/Desktop/RecognitionSystem/SetUp/Step2.png")
+img_liveness_check = cv2.imread("C:/Users/Usuario/Desktop/RecognitionSystem/SetUp/LivenessCheck.png")
 
 #Variables
 parpadeo = False
@@ -572,7 +572,7 @@ pantalla.title("FACE RECOGNITION")
 pantalla.geometry("1280x720")
 
 #Fondo
-imagenF = PhotoImage(file='C:/Users/mbarr/OneDrive/Escritorio/SistemaReconocimiento/SetUp/Inicio.png')
+imagenF = PhotoImage(file='C:/Users/Usuario/Desktop/RecognitionSystem/SetUp/Inicio.png')
 background = Label(image = imagenF, text="Inicio")
 background.place(x=0, y=0, relheight=1, relwidth=1)
 
@@ -595,15 +595,15 @@ InputPasswordLog.place(x=750, y=500)
 
 #Botones
 #Registro
-imagenBR = PhotoImage(file='C:/Users/mbarr/OneDrive/Escritorio/SistemaReconocimiento/SetUp/BtLogin.png')
-BtReg = Button(pantalla, text="Registro", image=imagenBR,  height="40", width="200", command=Log)
+imagenBR = PhotoImage(file='C:/Users/Usuario/Desktop/RecognitionSystem/SetUp/BtLogin.png')
+BtReg = Button(pantalla, text="Registro", image=imagenBR,  height="40", width="200", command=Sign)
 BtReg.place(x=300, y=580)
 
-imagenB = PhotoImage(file="C:/Users/mbarr/OneDrive/Escritorio/SistemaReconocimientoUNI/SetUp/Back2.png")
+imagenB = PhotoImage(file="C:/Users/Usuario/Desktop/RecognitionSystem/SetUp/Back2.png")
 
 #Inicio
-imagenBI = PhotoImage(file='C:/Users/mbarr/OneDrive/Escritorio/SistemaReconocimiento/SetUp/BtSign.png')
-BtInicio = Button(pantalla, text="Registro", image=imagenBI,  height="40", width="200", command=Sign)
+imagenBI = PhotoImage(file='C:/Users/Usuario/Desktop/RecognitionSystem/SetUp/BtSign.png')
+BtInicio = Button(pantalla, text="Registro", image=imagenBI,  height="40", width="200", command=Log)
 BtInicio.place(x=900, y=580)
 
 pantalla.mainloop()
