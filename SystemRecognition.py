@@ -478,56 +478,56 @@ def Log():
     cap.set(4, 720)
     Log_Biometric()
 
-def Sign():
-  global RegName, RegUser, RegPassword, InputNameReg, InputUserReg, InputPasswordReg, cap, lblVideo, pantalla2
-  # Extracción de datos: Name - User - Password
-  RegName, RegUser, RegPassword = InputNameReg.get(), InputUserReg.get(), InputPasswordReg.get()
+# def Sign():
+#   global RegName, RegUser, RegPassword, InputNameReg, InputUserReg, InputPasswordReg, cap, lblVideo, pantalla2
+#   # Extracción de datos: Name - User - Password
+#   RegName, RegUser, RegPassword = InputNameReg.get(), InputUserReg.get(), InputPasswordReg.get()
 
-  #Formulario incompleto
-  if len(RegName) == 0 or len(RegUser) == 0 or len(RegPassword) == 0:
-    print("Formulario incompleto")
-  else:
-    #Validar usuarios
-    UserList = os.listdir(PathUserCheck) #Lista de usuarios
+#   #Formulario incompleto
+#   if len(RegName) == 0 or len(RegUser) == 0 or len(RegPassword) == 0:
+#     print("Formulario incompleto")
+#   else:
+#     #Validar usuarios
+#     UserList = os.listdir(PathUserCheck) #Lista de usuarios
 
-    UserName = []
+#     UserName = []
 
-    for list in UserList:
-      User = list
-      User = User.split(".")
-      print("Nombre de usuario", User)
-      UserName.append(User[0])
+#     for list in UserList:
+#       User = list
+#       User = User.split(".")
+#       print("Nombre de usuario", User)
+#       UserName.append(User[0])
 
-    if RegUser in UserName:
-      print("Usuario ya registrado")
+#     if RegUser in UserName:
+#       print("Usuario ya registrado")
 
-    else:
-      info.append(RegName)
-      info.append(RegUser)
-      info.append(RegPassword)
+#     else:
+#       info.append(RegName)
+#       info.append(RegUser)
+#       info.append(RegPassword)
 
-      #Exportar información
-      f = open(f"{OutFolderPathUser}/{RegUser}.txt", "w")
+#       #Exportar información
+#       f = open(f"{OutFolderPathUser}/{RegUser}.txt", "w")
 
-      f.write(RegName + ', ' + RegUser + ', ' + RegPassword)
-      f.close()
+#       f.write(RegName + ', ' + RegUser + ', ' + RegPassword)
+#       f.close()
 
-      InputNameReg.delete(0, END)
-      InputUserReg.delete(0, END)
-      InputPasswordReg.delete(0, END)
+#       InputNameReg.delete(0, END)
+#       InputUserReg.delete(0, END)
+#       InputPasswordReg.delete(0, END)
 
-      pantalla2 = Toplevel(pantalla)
-      pantalla2.title("LOGIN BIOMÉTRICO")
-      pantalla2.geometry("1280x720")
+#       pantalla2 = Toplevel(pantalla)
+#       pantalla2.title("LOGIN BIOMÉTRICO")
+#       pantalla2.geometry("1280x720")
 
-      # Video
-      lblVideo = Label(pantalla2)
-      lblVideo.place(x=0, y=0)
+#       # Video
+#       lblVideo = Label(pantalla2)
+#       lblVideo.place(x=0, y=0)
 
-      cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-      cap.set(3, 1280)
-      cap.set(4, 720)
-      Sign_Biometric()
+#       cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+#       cap.set(3, 1280)
+#       cap.set(4, 720)
+#       Sign_Biometric()
 
 #Rutas
 OutFolderPathUser = 'C:/Users/Usuario/Desktop/RecognitionSystem/DataBase/Users'
