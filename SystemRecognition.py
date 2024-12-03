@@ -11,26 +11,30 @@ import math
 def Profile():
     global step, conteo, UserName, OutFolderPathUser
 
-    step = 0
     conteo = 0
+    step = 0
 
     pantalla4 = Toplevel(pantalla)
     pantalla4.title("PERFIL")
     pantalla4.geometry("1280x720")
 
-    imagenBC = PhotoImage(file='C:/Users/mbarr/OneDrive/Escritorio/SistemaReconocimiento/SetUp/Back2.png')
-    bc = Button(image=imagenBC, text="Inicio")
-    bc.place(x=0, y=0, relwidth=1, relheight=1)
+    back = Label(pantalla4, image=imagenB, text="Back")
+    back.place(x=0, y=0, relwidth=1, relheight=1)
 
     UserFile = open(f"{OutFolderPathUser}/{UserName}.txt", 'r')
-    InfoUser = UserFile.read().split(',')
+    InfoUser = UserFile.read().split(', ')
+    
     Name = InfoUser[0]
     User = InfoUser[1]
     Pass = InfoUser[2]
 
+    UserFile.close()
+
     if User in clases:
+
         #Interfaz
         texto1 = Label(pantalla4, text = f"BIENVENIDO {Name}")
+        
         texto1.place(x=580, y=50)
 
         #Label
@@ -38,6 +42,11 @@ def Profile():
         lblimage.place(x=490, y=80)
 
         #Imagen
+        PosUserImg = clases.index(User)
+        UserImg = images[PosUserImg]
+
+        ImgUser = Image.fromarray(UserImg)
+
         ImgUser = cv2.imread(f"{OutFolderPathFace}/{User}.png")
         ImgUser = cv2.cvtColor(ImgUser, cv2.COLOR_RGB2BGR)
         ImgUser = Image.fromarray(ImgUser)
@@ -148,7 +157,7 @@ def Sign_Biometric():
 
                             if faces.detections is not None:    
                                 for face in faces.detections:
-
+                                    
                                     # bboxInfo - "id","bbox","score","center"
                                     score = face.score
                                     score = score[0]
@@ -182,20 +191,19 @@ def Sign_Biometric():
                                         if al < 0: al = 0
 
                                         if step == 0:
-                                            print("Rostro detectado")
                                             cv2.rectangle(frame, (xi, yi, an, al), (255, 0, 255), 2)
 
                                     #STEP 0
-                                            als0, ans0, c = img_step0.shape
-                                            frame[50:50 + als0, 50:50 + ans0] = img_step0
+                                            alis0, anis0, c = img_step0.shape
+                                            frame[50:50 + alis0, 50:50 + anis0] = img_step0
 
                                     #STEP 1
-                                            als1, ans1, c = img_step1.shape
-                                            frame[50:50 + als1, 1030:1030 + ans1] = img_step1
+                                            alis1, anis1, c = img_step1.shape
+                                            frame[50:50 + alis1, 1030:1030 + anis1] = img_step1
 
                                     #STEP 2
-                                            als2, ans2, c = img_step2.shape
-                                            frame[270:270 + als2, 1030:1030 + ans2] = img_step2
+                                            alis2, anis2, c = img_step2.shape
+                                            frame[270:270 + alis2, 1030:1030 + anis2] = img_step2
                                       
 
                                     #Requerimiento 1: Ver en dirección a la cámara
@@ -218,21 +226,16 @@ def Sign_Biometric():
 
                                         #Validación de parpadeos
                                                 if conteo >= 3:
-                                                    alch, anch, c = img_check.shape
-                                                    frame[385:385 + alch, 1105:1105 + anch] = img_check
+                                                    alich, anich, c = img_check.shape
+                                                    frame[385:385 + alich, 1105:1105 + anich] = img_check
 
                                             #Ojos abiertos
                                                     if longitud1 > 14 and longitud2 > 14:
-                                                        cut = frameSave[yi:yf, xi:xf]
-
-                                                        cv2.imwrite(f"{OutFolderPathFace}/{RegUser}.png", cut)
-
                                                         step = 1
                                             else:
                                                 conteo = 0
 
                                         if step == 1:
-                                            
                                             cv2.rectangle(frame, (xi, yi, an, al), (255, 0, 255), 2)
 
                                             alli, anli, c = img_liveness_check.shape
@@ -243,19 +246,22 @@ def Sign_Biometric():
                                             facescod = fr.face_encodings(rgb, faces)
 
                                             for facecod, faceloc in zip(facescod, faces):
-                                        #Matching
+    # Obtener distancias y coincidencias
                                                 Match = fr.compare_faces(FaceCode, facecod)
-
-                                        #Similitud
                                                 simi = fr.face_distance(FaceCode, facecod)
-
-                                        #Min
-                                                min = np.argmin(simi)
-
-                                                if Match[min]:
-                                                    UserName = clases[min].upper()
-
+    
+    # Índice de la menor distancia
+                                                min_index = np.argmin(simi)
+                                                print("clases", clases)
+                                                print("similitud", min_index)
+                                                print("Match", Match)
+    # Verificar si la coincidencia cumple el umbral
+                                                if Match[min_index] and simi[min_index] < 0.8: # Ajusta el umbral según tu modelo
+                                                    print(f"FaceCode: {len(FaceCode)}, Clases: {len(clases)}")
+                                                    UserName = clases[min_index].upper()
                                                     Profile()
+                                                else:
+                                                    print("Usuario no reconocido o baja similitud.")
 
                             # close = pantalla3.protocol("WM_DELETE_WINDOW", Close_Window2())
 
@@ -592,6 +598,8 @@ InputPasswordLog.place(x=750, y=500)
 imagenBR = PhotoImage(file='C:/Users/mbarr/OneDrive/Escritorio/SistemaReconocimiento/SetUp/BtLogin.png')
 BtReg = Button(pantalla, text="Registro", image=imagenBR,  height="40", width="200", command=Log)
 BtReg.place(x=300, y=580)
+
+imagenB = PhotoImage(file="C:/Users/mbarr/OneDrive/Escritorio/SistemaReconocimientoUNI/SetUp/Back2.png")
 
 #Inicio
 imagenBI = PhotoImage(file='C:/Users/mbarr/OneDrive/Escritorio/SistemaReconocimiento/SetUp/BtSign.png')
