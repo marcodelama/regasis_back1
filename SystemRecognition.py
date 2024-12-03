@@ -10,10 +10,6 @@ from PIL import Image, ImageTk
 OutFolderPathUser = 'C:/Users/Usuario/Desktop/RecognitionSystem/DataBase/Users'
 OutFolderPathFace = 'C:/Users/Usuario/Desktop/RecognitionSystem/DataBase/Faces'
 
-pantalla = Tk()
-pantalla.title("FACE RECOGNITION")
-pantalla.geometry("1280x720")
-
 # Lista de usuarios y sus imágenes
 images = []
 clases = []
@@ -86,7 +82,7 @@ def Profile(UserName):
     conteo = 0
     step = 0
 
-    pantalla_perfil = Toplevel(pantalla)
+    pantalla_perfil = Tk()
     pantalla_perfil.title("PERFIL")
     pantalla_perfil.geometry("1280x720")
 
@@ -131,6 +127,8 @@ def Profile(UserName):
         lblimage.configure(image=IMG)
         lblimage.image = IMG
 
+    pantalla_perfil.mainloop()
+
 # Ejecutar el código de verificación e iniciar el perfil
 if __name__ == "__main__":
     # Ruta de la imagen a verificar
@@ -144,10 +142,3 @@ if __name__ == "__main__":
         Profile(result)
     else:
         print("Acceso denegado.")
-        pantalla_perfil = Toplevel(pantalla)
-        pantalla_perfil.title("Acceso Denegado")
-        pantalla_perfil.geometry("400x200")
-        Label(pantalla_perfil, text="Usuario no reconocido.").pack(padx=20, pady=20)
-
-# Iniciar la interfaz
-pantalla.mainloop()
